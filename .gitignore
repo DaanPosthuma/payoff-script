@@ -1,0 +1,10 @@
+__pycache__
+.conan2
+.venv
+build
+CMakeUserPresets.json
+.vscode
+*.out
+*.swp
+.ipynb_checkpoints
+*.log
