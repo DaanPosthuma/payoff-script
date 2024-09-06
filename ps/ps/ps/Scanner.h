@@ -28,7 +28,7 @@ void PrintTo(TokenType tokenType, std::ostream* os);
 
 class Token {
  public:
-  Token(TokenType tokenType, std::string literal) : mTokenType(tokenType), mLiteral(std::move(literal)) {}
+  Token(TokenType tokenType, std::string literal) noexcept : mTokenType(tokenType), mLiteral(std::move(literal)) {}
   [[nodiscard]] auto type() const noexcept { return mTokenType; }
   [[nodiscard]] auto const& literal() const noexcept { return mLiteral; }
 

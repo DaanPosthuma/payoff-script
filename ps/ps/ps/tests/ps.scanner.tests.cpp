@@ -1,6 +1,6 @@
+#include "testScripts.h"
 #include <gtest/gtest.h>
 #include <ps/Scanner.h>
-#include <ps/ps.h>
 //
 #include <ranges>
 
@@ -10,16 +10,6 @@ using namespace std::string_literals;
 
 auto types(auto const& rng) {
   return rng | std::views::transform([](auto const& token) { return token.type(); }) | std::ranges::to<std::vector>();
-}
-
-namespace scripts {
-auto const vanillaCall = R"(base = ccy($base_ccy)
-                            term = ccy($term_ccy)
-                            notional = $notional_amt [base]
-                            strike = $strike [term/base]
-                            expiry = datetime($expiry_date)
-                            s = spot(base,term)
-                            cashflow(expiry, notional * max(s - strike)))"s;
 }
 
 TEST(ps_scanner, tokenizeSpaces) {

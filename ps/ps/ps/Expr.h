@@ -1,8 +1,10 @@
 #pragma once
 
-#include <vector>
-#include <variant>
 #include <string>
+#include <variant>
+#include <vector>
+
+namespace ps {
 
 class ExprAdd;
 class ExprSubtract;
@@ -14,30 +16,40 @@ using Expr = std::variant<ExprAdd, ExprSubtract, ExprDouble, ExprGlobal>;
 class ExprWithChildren {
  public:
   ExprWithChildren(std::vector<Expr> children);
- private:
-  std::vector<Expr> children;
+
+ protected:
+  std::vector<Expr> mChildren;
 };
 
-class ExprAdd : public ExprWithChildren {
+class ExprAdd : private ExprWithChildren {
+ public:
   ExprAdd(Expr lhs, Expr rhs);
+  [[nodiscard]] Expr const& lhs() const noexcept;
+  [[nodiscard]] Expr const& rhs() const noexcept;
 };
 
-class ExprSubtract : public ExprWithChildren {
+class ExprSubtract : private ExprWithChildren {
+ public:
   ExprSubtract(Expr lhs, Expr rhs);
+  [[nodiscard]] Expr const& lhs() const noexcept;
+  [[nodiscard]] Expr const& rhs() const noexcept;
 };
 
 class ExprDouble {
-public:
+ public:
   ExprDouble(double value);
+  [[nodiscard]] double value() const noexcept;
 
-private:
+ private:
   double mValue;
 };
 
 class ExprGlobal {
-public:
+ public:
   ExprGlobal(std::string name);
 
-private:
+ private:
   std::string mName;
 };
+
+}  // namespace ps
