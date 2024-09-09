@@ -11,6 +11,6 @@ class Token;
 
 namespace ps::parser {
 
-ps::Expr parse(std::vector<ps::scanner::Token> const& tokens);
+std::vector<ps::Expr> parse(std::vector<ps::scanner::Token> const& tokens);
 
 }

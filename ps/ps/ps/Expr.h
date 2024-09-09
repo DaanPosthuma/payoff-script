@@ -6,12 +6,16 @@
 
 namespace ps {
 
+// statements:
+class ExprAssign;
+// expressions:
+class ExprVariable;
+class ExprGlobal;
 class ExprAdd;
 class ExprSubtract;
 class ExprDouble;
-class ExprGlobal;
 
-using Expr = std::variant<ExprAdd, ExprSubtract, ExprDouble, ExprGlobal>;
+using Expr = std::variant<ExprAssign, ExprVariable, ExprGlobal, ExprAdd, ExprSubtract, ExprDouble>;
 
 class ExprWithChildren {
  public:
@@ -19,6 +23,31 @@ class ExprWithChildren {
 
  protected:
   std::vector<Expr> mChildren;
+};
+
+class ExprAssign : private ExprWithChildren {
+ public:
+  ExprAssign(ExprVariable lhs, Expr rhs);
+  [[nodiscard]] ExprVariable const& variable() const noexcept;
+  [[nodiscard]] Expr const& rhs() const noexcept;
+};
+
+class ExprVariable {
+ public:
+  ExprVariable(std::string name);
+  [[nodiscard]] std::string const& name() const noexcept;
+
+ private:
+  std::string mName;
+};
+
+class ExprGlobal {
+ public:
+  ExprGlobal(std::string name);
+  [[nodiscard]] std::string const& name() const noexcept;
+
+ private:
+  std::string mName;
 };
 
 class ExprAdd : private ExprWithChildren {
@@ -44,12 +73,6 @@ class ExprDouble {
   double mValue;
 };
 
-class ExprGlobal {
- public:
-  ExprGlobal(std::string name);
-
- private:
-  std::string mName;
-};
+std::string getTypeName(Expr const& expr);
 
 }  // namespace ps

@@ -1,6 +1,11 @@
 #include "Parser.h"
 
+#include <expected>
+#include <format>
+#include <optional>
 #include <span>
+#include <stdexcept>
+#include <print>
 
 #include "Scanner.h"
 
@@ -10,20 +15,68 @@ using namespace ps;
 using namespace ps::scanner;
 
 class Parser {
- private:
+ public:
   struct ParseError {
     Token token;
     std::string message;
   };
 
- public:
   explicit Parser(std::span<const ps::scanner::Token> tokens) noexcept : mTokens(tokens) {}
 
-  [[nodiscard]] Expr parse() {
-    return ExprAdd(ExprDouble(9.0), ExprDouble(7.0));
+  [[nodiscard]] Expr parseOne() {
+    return parseAssignment();
+  }
+
+  [[nodiscard]] std::vector<Expr> parse() {
+    auto ret = std::vector<Expr>{};
+
+    while (!isAtEnd()) {
+      ret.push_back(parseOne());
+    }
+    return ret;
   }
 
  private:
+  Expr parseAssignment() {
+    auto expr = parseBinary();
+    
+    if (std::holds_alternative<ExprVariable>(expr) && match<ps::scanner::TokenType::Equals>()) {
+      auto rhs = parseBinary();
+      return ExprAssign(std::get<ExprVariable>(std::move(expr)), std::move(rhs));
+    }
+
+    return expr;
+  }
+
+  Expr parseBinary() {
+    auto expr = parseLeaf();
+
+    while (match<ps::scanner::TokenType::Minus, ps::scanner::TokenType::Plus>()) {
+        auto const operatr = previous();
+        auto const right = parseLeaf();
+        if (operatr.literal() == "+") return ExprAdd(std::move(expr), std::move(right));
+        else return ExprSubtract(std::move(expr), std::move(right));
+    }
+
+    return expr;
+  }
+
+  Expr parseLeaf() {
+    
+    if (match<ps::scanner::TokenType::Double>()) {
+      auto token = previous();
+      return ExprDouble(std::stoi(token.literal()));
+    } else if (match<ps::scanner::TokenType::Global>()) {
+      auto token = previous();
+      return ExprGlobal(token.literal());
+    } else if (match<ps::scanner::TokenType::Identifier>()) {
+      auto token = previous();
+      return ExprVariable(token.literal());
+    }
+
+    throw ParseError(peek(), "Expect leaf.");
+  }
+
   Token const& advance() noexcept;
   [[nodiscard]] bool isAtEnd() const noexcept;
   [[nodiscard]] Token const& peek() const noexcept;
@@ -36,7 +89,7 @@ class Parser {
   }
 
   template <TokenType T>
-  [[nodiscard]] bool match() const noexcept {
+  [[nodiscard]] bool match() noexcept {
     if (check<T>()) {
       advance();
       return true;
@@ -45,7 +98,7 @@ class Parser {
   }
 
   template <TokenType First, TokenType Second, TokenType... Rest>
-  [[nodiscard]] bool match() const noexcept {
+  [[nodiscard]] bool match() noexcept {
     return match<First>() || match<Second, Rest...>();
   }
 
@@ -78,6 +131,12 @@ Token const& Parser::previous() const noexcept {
 
 }  // namespace
 
-ps::Expr ps::parser::parse(std::vector<ps::scanner::Token> const& tokens) {
-  return Parser(std::span(tokens)).parse();
+std::vector<ps::Expr> ps::parser::parse(std::vector<ps::scanner::Token> const& tokens) {
+  try {
+    return Parser(std::span(tokens)).parse();
+  } catch (Parser::ParseError const& err) {
+    auto const& message = err.message;
+    auto const& token = err.token;
+    throw std::runtime_error(std::format("Parser error. Message: '{}'. Token ({}): '{}'. Line: {}", message, toString(token.type()), token.literal(), token.line()));
+  }
 }

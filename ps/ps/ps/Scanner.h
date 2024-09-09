@@ -20,6 +20,7 @@ enum class TokenType {
   RightBracket,
   Equals,
   Double,
+  NewLine,
   EndOfFile
 };
 
@@ -28,13 +29,15 @@ void PrintTo(TokenType tokenType, std::ostream* os);
 
 class Token {
  public:
-  Token(TokenType tokenType, std::string literal) noexcept : mTokenType(tokenType), mLiteral(std::move(literal)) {}
+  Token(TokenType tokenType, std::string literal, int line) noexcept : mTokenType(tokenType), mLiteral(std::move(literal)), mLine(line) {}
   [[nodiscard]] auto type() const noexcept { return mTokenType; }
   [[nodiscard]] auto const& literal() const noexcept { return mLiteral; }
+  [[nodiscard]] auto line() const noexcept { return mLine; }
 
  private:
   TokenType mTokenType;
   std::string mLiteral;
+  int mLine;
 };
 
 std::vector<Token> scanTokens(std::string_view const script);

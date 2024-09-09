@@ -23,7 +23,7 @@ class Scanner {
         tokens.push_back(*token);
       }
     }
-    tokens.emplace_back(TokenType::EndOfFile, "");
+    tokens.emplace_back(TokenType::EndOfFile, "", line);
     return tokens;
   }
 
@@ -81,7 +81,7 @@ class Scanner {
         break;
       case '\n':
         ++line;
-        break;
+        return emit(TokenType::NewLine);
       case '-':
         return emit(TokenType::Minus);
       case '+':
@@ -120,7 +120,7 @@ class Scanner {
   auto emit(TokenType type) const {
     auto s = std::string(script.substr(start, curr - start));
     //std::println("emitting: {} ({})", toString(type), s);
-    return Token(type, std::string(script.substr(start, curr - start)));
+    return Token(type, std::string(script.substr(start, curr - start)), line);
   }
 
   size_t start = 0;
@@ -159,6 +159,8 @@ std::string ps::scanner::toString(TokenType tokenType) {
       return "Equals";
     case TokenType::Double:
       return "Double";
+    case TokenType::NewLine:
+      return "NewLine";
     case TokenType::EndOfFile:
       return "EndOfFile";
     default:
