@@ -24,7 +24,6 @@ void loggerLoop(auto& queue, std::stop_token stopToken, std::function<void(loggi
       std::this_thread::sleep_for(sleepDuration);
     }
     
-    std::this_thread::sleep_for(1s);
     while (auto msg = queue.pop()) {
       logMessageHandler(*msg);
     }
