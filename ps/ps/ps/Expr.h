@@ -3,6 +3,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <span>
 
 namespace ps {
 
@@ -87,6 +88,8 @@ class ExprIdentifier {
 class ExprFunctionCall : private ExprWithChildren {
  public:
   ExprFunctionCall(std::string identifier, std::vector<ps::Expr> arguments);
+  [[nodiscard]] std::string const& identifier() const noexcept;
+  [[nodiscard]] std::span<const ps::Expr> arguments() const noexcept;
 
 };
 

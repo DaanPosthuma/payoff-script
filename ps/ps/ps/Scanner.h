@@ -1,8 +1,8 @@
 #pragma once
 
+#include <iosfwd>
 #include <string>
 #include <vector>
-#include <iosfwd>
 
 namespace ps::scanner {
 

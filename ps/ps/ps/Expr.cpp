@@ -3,14 +3,11 @@
 #include <variant>
 
 namespace {
-// helper type for the visitor #4
+
 template <class... Ts>
 struct overloaded : Ts... {
   using Ts::operator()...;
 };
-// explicit deduction guide (not needed as of C++20)
-template <class... Ts>
-overloaded(Ts...) -> overloaded<Ts...>;
 
 }  // namespace
 
@@ -45,6 +42,13 @@ ps::ExprFunctionCall::ExprFunctionCall(std::string identifier, std::vector<ps::E
   mChildren.append_range(std::move(arguments));
 }
 
+std::string const& ps::ExprFunctionCall::identifier() const noexcept {
+  return std::get<ps::ExprIdentifier>(mChildren[0]).identifier();
+}
+std::span<const ps::Expr> ps::ExprFunctionCall::arguments() const noexcept {
+  return {mChildren.begin() + 1, mChildren.end()};
+}
+
 std::string ps::getTypeName(Expr const& expr) {
   using namespace std::string_literals;
   return std::visit(overloaded{
@@ -56,7 +60,6 @@ std::string ps::getTypeName(Expr const& expr) {
                         [](ExprSubtract const&) { return "ExprSubtract"s; },
                         [](ExprDouble const&) { return "ExprDouble"s; },
                         [](ExprIdentifier const&) { return "ExprIdentifier"s; },
-                        [](ExprFunctionCall const&) { return "ExprFunctionCall"s; }
-                    },
+                        [](ExprFunctionCall const&) { return "ExprFunctionCall"s; }},
                     expr);
 }

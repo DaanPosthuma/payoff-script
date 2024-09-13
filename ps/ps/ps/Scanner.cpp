@@ -1,10 +1,10 @@
 #include "Scanner.h"
+#include <ps/exception.h>
 
 #include <cctype>
 #include <iostream>
 #include <optional>
 #include <print>
-#include <stdexcept>
 #include <utility>
 #include <vector>
 
@@ -110,7 +110,7 @@ class Scanner {
         } else if (std::isalpha(c)) {
           return scanIdentifier();
         } else {
-          throw std::runtime_error(std::format("Unknown character ({}) on line {}", c, line));
+          throw ps::exception("Unknown character ({}) on line {}", c, line);
         }
     }
 

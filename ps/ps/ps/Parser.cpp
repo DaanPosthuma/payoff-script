@@ -4,8 +4,8 @@
 #include <format>
 #include <optional>
 #include <span>
-#include <stdexcept>
 #include <print>
+#include <ps/exception.h>
 
 #include "Scanner.h"
 
@@ -137,6 +137,6 @@ std::vector<ps::Expr> ps::parser::parse(std::vector<ps::scanner::Token> const& t
   } catch (Parser::ParseError const& err) {
     auto const& message = err.message;
     auto const& token = err.token;
-    throw std::runtime_error(std::format("Parser error. Message: '{}'. Token ({}): '{}'. Line: {}", message, toString(token.type()), token.literal(), token.line()));
+    throw ps::exception("Parser error. Message: '{}'. Token ({}): '{}'. Line: {}", message, toString(token.type()), token.literal(), token.line());
   }
 }

@@ -2,15 +2,18 @@
 
 #include <ps/Expr.h>
 
+#include <iosfwd>
 #include <unordered_map>
 #include <vector>
-#include <iosfwd>
 
 namespace ps::static_analysis {
 
 enum class Type {
   Double,
-  Date
+  Date,
+  Nothing,
+  Unknown,
+  Error
 };
 
 [[nodiscard]] std::string toString(Type type);
