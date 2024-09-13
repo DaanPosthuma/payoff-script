@@ -33,7 +33,7 @@ TEST(ps_scanner, tokenizeGlobal) {
 }
 
 TEST(ps_scanner, tokenizeVanillaCall) {
-  auto const tokens = ps::scanner::scanTokens(scripts::vanillaCall);
+  auto const tokens = ps::scanner::scanTokens(ps::tests::scripts::vanillaCall);
 
   auto const isGlobal = [](auto const& token) { return token.type() == ps::scanner::TokenType::Global; };
   auto const isIdentifier = [](auto const& token) { return token.type() == ps::scanner::TokenType::Identifier; };

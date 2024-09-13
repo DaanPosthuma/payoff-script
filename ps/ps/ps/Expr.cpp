@@ -37,6 +37,14 @@ ps::Expr const& ps::ExprSubtract::rhs() const noexcept { return mChildren[1]; }
 ps::ExprDouble::ExprDouble(double value) : mValue(value) {}
 double ps::ExprDouble::value() const noexcept { return mValue; }
 
+ps::ExprIdentifier::ExprIdentifier(std::string identifier) : mIdentifier(std::move(identifier)) {}
+std::string const& ps::ExprIdentifier::identifier() const noexcept { return mIdentifier; }
+
+ps::ExprFunctionCall::ExprFunctionCall(std::string identifier, std::vector<ps::Expr> arguments) {
+  mChildren.emplace_back(ps::ExprIdentifier(std::move(identifier)));
+  mChildren.append_range(std::move(arguments));
+}
+
 std::string ps::getTypeName(Expr const& expr) {
   using namespace std::string_literals;
   return std::visit(overloaded{
@@ -46,7 +54,9 @@ std::string ps::getTypeName(Expr const& expr) {
                         [](ExprGlobal const&) { return "ExprGlobal"s; },
                         [](ExprAdd const&) { return "ExprAdd"s; },
                         [](ExprSubtract const&) { return "ExprSubtract"s; },
-                        [](ExprDouble const&) { return "ExprDouble"s; }
+                        [](ExprDouble const&) { return "ExprDouble"s; },
+                        [](ExprIdentifier const&) { return "ExprIdentifier"s; },
+                        [](ExprFunctionCall const&) { return "ExprFunctionCall"s; }
                     },
                     expr);
 }

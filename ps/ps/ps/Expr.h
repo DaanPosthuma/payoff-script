@@ -14,12 +14,14 @@ class ExprGlobal;
 class ExprAdd;
 class ExprSubtract;
 class ExprDouble;
+class ExprIdentifier;
+class ExprFunctionCall;
 
-using Expr = std::variant<ExprAssign, ExprVariable, ExprGlobal, ExprAdd, ExprSubtract, ExprDouble>;
+using Expr = std::variant<ExprAssign, ExprVariable, ExprGlobal, ExprAdd, ExprSubtract, ExprDouble, ExprIdentifier, ExprFunctionCall>;
 
 class ExprWithChildren {
  public:
-  ExprWithChildren(std::vector<Expr> children);
+  ExprWithChildren(std::vector<Expr> children = {});
 
  protected:
   std::vector<Expr> mChildren;
@@ -71,6 +73,21 @@ class ExprDouble {
 
  private:
   double mValue;
+};
+
+class ExprIdentifier {
+ public:
+  ExprIdentifier(std::string identifier);
+  [[nodiscard]] std::string const& identifier() const noexcept;
+
+ private:
+  std::string mIdentifier;
+};
+
+class ExprFunctionCall : private ExprWithChildren {
+ public:
+  ExprFunctionCall(std::string identifier, std::vector<ps::Expr> arguments);
+
 };
 
 std::string getTypeName(Expr const& expr);

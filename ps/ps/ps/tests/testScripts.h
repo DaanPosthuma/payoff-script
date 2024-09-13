@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace scripts {
+namespace ps::tests::scripts {
 
 using namespace std::string_literals;
 

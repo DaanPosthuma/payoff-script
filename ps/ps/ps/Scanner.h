@@ -24,7 +24,7 @@ enum class TokenType {
   EndOfFile
 };
 
-std::string toString(TokenType tokenType);
+[[nodiscard]] std::string toString(TokenType tokenType);
 void PrintTo(TokenType tokenType, std::ostream* os);
 
 class Token {
